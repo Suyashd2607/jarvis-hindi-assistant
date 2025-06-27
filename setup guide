@@ -1,0 +1,138 @@
+
+# 🧰 JARVIS Hindi Assistant – Complete Setup Guide
+
+This guide will help you set up the JARVIS Hindi Voice Assistant across Android and Raspberry Pi from scratch, even if you're new to development or automation.
+
+---
+
+## 📁 CONTENTS
+
+1. Android App Installation
+2. Tasker Profile Setup (Optional but Recommended)
+3. Raspberry Pi Setup
+4. MQTT Broker Configuration
+5. Connecting Android & Raspberry Pi
+6. Final Testing
+7. Troubleshooting
+
+---
+
+## 1️⃣ ANDROID APP INSTALLATION
+
+### A. Install APK
+1. Copy `jarvis-hindi.apk` from the `/android/` folder to your Android device.
+2. Tap to install (enable "Install from Unknown Sources").
+
+### B. Required Permissions
+Manually grant the following permissions:
+- Microphone
+- Contacts
+- Phone
+- SMS
+- Accessibility (for background control)
+
+### C. OpenAI API Key
+1. Open the Android Studio project in `/android/app/`.
+2. In `Constants.kt`, paste your OpenAI key:
+   ```kotlin
+   const val OPENAI_KEY = "your-api-key-here"
+   ```
+3. Rebuild or re-export APK if editing code.
+
+---
+
+## 2️⃣ TASKER PROFILE SETUP (OPTIONAL)
+
+### A. Install Required Apps
+- [Tasker](https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm)
+- [Termux](https://f-droid.org/en/packages/com.termux/)
+- [AutoInput Plugin](https://play.google.com/store/apps/details?id=com.joaomgcd.autoinput) (if using UI triggers)
+
+### B. Import Profile
+1. Open Tasker > `Profiles` tab
+2. Tap `⋮` → `Import`
+3. Choose `JARVIS_WhatsApp_Call.prj.xml` from `/tasker/`
+
+### C. Grant Permissions
+Enable:
+- Accessibility
+- Notification Access
+- Run in Background
+
+---
+
+## 3️⃣ RASPBERRY PI SETUP
+
+### A. Requirements
+- Raspberry Pi (any model with Python 3)
+- Microphone (USB or 3.5mm)
+- Speaker or headphone jack
+
+### B. Install Dependencies
+```bash
+sudo apt update
+sudo apt install python3-pip mosquitto mosquitto-clients
+cd raspberrypi
+pip3 install -r requirements.txt
+```
+
+---
+
+## 4️⃣ MQTT BROKER SETUP
+
+### A. Use Sample Config
+```bash
+mosquitto -c mqtt_sample_config/mosquitto.conf
+```
+
+This config enables local communication between Android and Raspberry Pi using topics like `jarvis/command`.
+
+---
+
+## 5️⃣ CONNECTING AND RUNNING
+
+### A. Run Raspberry Pi Voice Assistant
+```bash
+python3 jarvis_pi.py
+```
+
+### B. Start MQTT Listener (optional)
+```bash
+python3 mqtt_client.py
+```
+
+### C. Use Android App
+Say:
+- “हे जार्विस, मम्मी को कॉल करो” → initiates phone call
+- “हे जार्विस, लाइट ऑन करो” → sends MQTT to Pi
+
+---
+
+## 6️⃣ TESTING
+
+### Android to Pi Command
+- Android sends: `jarvis/command = "led_on"`
+- Pi receives and activates GPIO
+- Pi sends: `jarvis/reply = "लाइट चालू कर दी गई"`
+
+### WhatsApp Message Example
+“हे जार्विस, पापा को व्हाट्सऐप भेजो – मैं 5 मिनट में आता हूँ”
+
+---
+
+## 7️⃣ TROUBLESHOOTING
+
+| Issue                        | Solution                                       |
+|-----------------------------|------------------------------------------------|
+| App doesn't respond          | Check microphone permissions, restart app     |
+| MQTT not connecting          | Restart Mosquitto and check IP address        |
+| GPIO not triggering          | Confirm wiring and `gpio_controller.py` pin   |
+| Hindi STT not accurate       | Speak clearly, update Android STT settings    |
+
+---
+
+## 📬 Need Help?
+
+- GitHub: [suyashd2607](https://github.com/suyashd2607)
+- Raise issues or contribute improvements to the assistant project
+
